@@ -179,11 +179,6 @@ export default function AdminPage() {
                 Login
               </Button>
             </form>
-            <div className="mt-4 text-center text-sm text-gray-400">
-              <p>Demo credentials:</p>
-              <p>Username: admin</p>
-              <p>Password: elitepets2025</p>
-            </div>
           </CardContent>
         </Card>
       </div>

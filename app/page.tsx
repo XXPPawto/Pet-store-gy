@@ -87,9 +87,6 @@ export default function HomePage() {
               <a href="#contact" className="hover:text-cyan-400 transition-colors">
                 Kontak
               </a>
-              <a href="/admin" className="text-sm text-gray-400 hover:text-white transition-colors">
-                Admin
-              </a>
             </nav>
             <div className="flex items-center space-x-4">
               <div className="relative">
