@@ -49,7 +49,7 @@
     "name": "DILOPHOSAURUS",
     "price": "Rp 15.000-17.000",
     "description": "Koleksi dinosaurus",
-    "stock": 6,
+    "stock": 3,
     "status": "ready",
     "category": "pet"
   },
@@ -58,7 +58,7 @@
     "name": "RED FOX",
     "price": "Rp 8.000-10.000",
     "description": "Gemuk",
-    "stock": 8,
+    "stock": 4,
     "status": "ready",
     "category": "pet"
   },
@@ -67,7 +67,7 @@
     "name": "MOON CAT",
     "price": "Rp 6.000-8.000",
     "description": "Gemuk",
-    "stock": 10,
+    "stock": 5,
     "status": "ready",
     "category": "pet"
   },
@@ -76,7 +76,7 @@
     "name": "OWL BIASA",
     "price": "Rp 5.000",
     "description": "Pet standar",
-    "stock": 15,
+    "stock": 6,
     "status": "ready",
     "category": "pet"
   },
@@ -85,7 +85,7 @@
     "name": "COOKED OWL",
     "price": "Rp 5.000",
     "description": "Varian spesial",
-    "stock": 12,
+    "stock": 3,
     "status": "ready",
     "category": "pet"
   },
@@ -94,7 +94,7 @@
     "name": "OSTRIC",
     "price": "Rp 5.000",
     "description": "Pet burung",
-    "stock": 8,
+    "stock": 4,
     "status": "ready",
     "category": "pet"
   },
@@ -103,7 +103,7 @@
     "name": "MANTIS",
     "price": "Rp 5.000-7.000",
     "description": "Gemuk",
-    "stock": 7,
+    "stock": 3,
     "status": "ready",
     "category": "pet"
   },
@@ -112,7 +112,7 @@
     "name": "PETAL BEE",
     "price": "Rp 7.000",
     "description": "Lebah cantik",
-    "stock": 5,
+    "stock": 2,
     "status": "ready",
     "category": "pet"
   },
@@ -121,7 +121,7 @@
     "name": "ALL MACAW",
     "price": "Rp 6.000",
     "description": "Gemuk",
-    "stock": 9,
+    "stock": 4,
     "status": "ready",
     "category": "pet"
   },
@@ -130,7 +130,7 @@
     "name": "CAPYBARA",
     "price": "Rp 6.000",
     "description": "Gemuk",
-    "stock": 6,
+    "stock": 3,
     "status": "ready",
     "category": "pet"
   },
@@ -139,7 +139,7 @@
     "name": "SEAL",
     "price": "Rp 5.000",
     "description": "Pet air",
-    "stock": 11,
+    "stock": 5,
     "status": "ready",
     "category": "pet"
   },
@@ -148,7 +148,7 @@
     "name": "PEACOCK",
     "price": "Rp 5.000",
     "description": "Gemuk",
-    "stock": 7,
+    "stock": 2,
     "status": "ready",
     "category": "pet"
   },
@@ -157,7 +157,7 @@
     "name": "BLOOD KIWI",
     "price": "Rp 6.000",
     "description": "Gemuk",
-    "stock": 4,
+    "stock": 3,
     "status": "ready",
     "category": "pet"
   },
@@ -165,8 +165,8 @@
     "id": 19,
     "name": "Paket 30+",
     "price": "Rp 3.000",
-    "description": "Paket tumbal 30+ pets",
-    "stock": 20,
+    "description": "Paket tumbal 30+",
+    "stock": 10,
     "status": "ready",
     "category": "package"
   },
@@ -174,8 +174,8 @@
     "id": 20,
     "name": "Paket 45+",
     "price": "Rp 10.000",
-    "description": "Paket tumbal 45+ pets",
-    "stock": 15,
+    "description": "Paket tumbal 45+",
+    "stock": 8,
     "status": "ready",
     "category": "package"
   },
@@ -183,8 +183,8 @@
     "id": 21,
     "name": "Paket 60+",
     "price": "Rp 17.000",
-    "description": "Paket tumbal 60+ pets",
-    "stock": 10,
+    "description": "Paket tumbal 60+",
+    "stock": 6,
     "status": "ready",
     "category": "package"
   },
@@ -192,8 +192,8 @@
     "id": 22,
     "name": "Paket 75+",
     "price": "Rp 23.000",
-    "description": "Paket tumbal 75+ pets",
-    "stock": 8,
+    "description": "Paket tumbal 75+",
+    "stock": 4,
     "status": "ready",
     "category": "package"
   },

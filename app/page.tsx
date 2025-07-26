@@ -19,6 +19,7 @@ export default function HomePage() {
   const [pets, setPets] = useState<Pet[]>([])
   const [cart, setCart] = useState<Pet[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPets()
@@ -26,11 +27,48 @@ export default function HomePage() {
 
   const fetchPets = async () => {
     try {
-      const response = await fetch("/api/pets")
+      setLoading(true)
+      setError(null)
+      console.log("Fetching pets from /api/pets...")
+
+      const response = await fetch("/api/pets", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      })
+
+      console.log("Response status:", response.status)
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()))
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error("Error response:", errorText)
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+      }
+
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text()
+        console.error("Non-JSON response:", text)
+        throw new Error("Server returned non-JSON response")
+      }
+
       const data = await response.json()
-      setPets(data)
+      console.log("Received data:", data)
+
+      if (Array.isArray(data)) {
+        setPets(data)
+        console.log("Successfully set pets:", data.length, "items")
+      } else {
+        console.error("Invalid data format:", data)
+        throw new Error("Invalid data format received")
+      }
     } catch (error) {
       console.error("Error fetching pets:", error)
+      setError(error instanceof Error ? error.message : "Failed to load pets")
     } finally {
       setLoading(false)
     }
@@ -64,6 +102,19 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-xl mb-4">Error: {error}</div>
+          <Button onClick={fetchPets} className="bg-blue-600 hover:bg-blue-700">
+            Try Again
+          </Button>
+        </div>
       </div>
     )
   }
@@ -135,35 +186,41 @@ export default function HomePage() {
           <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-pink-500 to-cyan-400 bg-clip-text text-transparent">
             Koleksi Pet Premium
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {petItems.map((pet) => (
-              <div
-                key={pet.id}
-                className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-lg font-bold text-cyan-400">{pet.name}</h3>
-                  <div className="flex flex-col items-end space-y-1">
-                    <Badge variant={pet.status === "ready" ? "default" : "destructive"}>
-                      {pet.status === "ready" ? "Ready" : "Sold Out"}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      Stok: {pet.stock}
-                    </Badge>
-                  </div>
-                </div>
-                <p className="text-2xl font-bold text-pink-500 mb-2">{pet.price}</p>
-                <p className="text-gray-300 text-sm mb-4">{pet.description}</p>
-                <Button
-                  onClick={() => addToCart(pet)}
-                  disabled={pet.stock === 0 || pet.status === "sold"}
-                  className="w-full bg-gradient-to-r from-pink-500 to-cyan-500 hover:from-pink-600 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          {petItems.length === 0 ? (
+            <div className="text-center text-gray-400">
+              <p>Tidak ada pet yang tersedia saat ini.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {petItems.map((pet) => (
+                <div
+                  key={pet.id}
+                  className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105"
                 >
-                  {pet.stock === 0 || pet.status === "sold" ? "Habis" : "Tambah ke Cart"}
-                </Button>
-              </div>
-            ))}
-          </div>
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-bold text-cyan-400">{pet.name}</h3>
+                    <div className="flex flex-col items-end space-y-1">
+                      <Badge variant={pet.status === "ready" ? "default" : "destructive"}>
+                        {pet.status === "ready" ? "Ready" : "Sold Out"}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Stok: {pet.stock}
+                      </Badge>
+                    </div>
+                  </div>
+                  <p className="text-2xl font-bold text-pink-500 mb-2">{pet.price}</p>
+                  <p className="text-gray-300 text-sm mb-4">{pet.description}</p>
+                  <Button
+                    onClick={() => addToCart(pet)}
+                    disabled={pet.stock === 0 || pet.status === "sold"}
+                    className="w-full bg-gradient-to-r from-pink-500 to-cyan-500 hover:from-pink-600 hover:to-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {pet.stock === 0 || pet.status === "sold" ? "Habis" : "Tambah ke Cart"}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -174,67 +231,79 @@ export default function HomePage() {
             Pet Tumbal
           </h2>
           <p className="text-center text-gray-300 mb-12">Ambil paket didiskon aman ae</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {packageItems.map((pkg) => (
-              <div
-                key={pkg.id}
-                className="bg-pink-500/10 border-2 border-pink-500/30 rounded-xl p-6 text-center hover:bg-pink-500/20 transition-all duration-300 hover:scale-105"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-lg font-bold text-pink-500">{pkg.name}</h3>
-                  <div className="flex flex-col items-end space-y-1">
-                    <Badge variant={pkg.status === "ready" ? "default" : "destructive"}>
-                      {pkg.status === "ready" ? "Ready" : "Sold Out"}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      Stok: {pkg.stock}
-                    </Badge>
-                  </div>
-                </div>
-                <p className="text-3xl font-bold text-white mb-4">{pkg.price}</p>
-                <Button
-                  onClick={() => addToCart(pkg)}
-                  disabled={pkg.stock === 0 || pkg.status === "sold"}
-                  className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {pkg.stock === 0 || pkg.status === "sold" ? "Habis" : "Tambah ke Cart"}
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          {/* Equipment */}
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-cyan-400 mb-6">Perlengkapan Tambahan</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {equipmentItems.map((equipment) => (
+          {packageItems.length === 0 ? (
+            <div className="text-center text-gray-400 mb-12">
+              <p>Tidak ada paket yang tersedia saat ini.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {packageItems.map((pkg) => (
                 <div
-                  key={equipment.id}
-                  className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+                  key={pkg.id}
+                  className="bg-pink-500/10 border-2 border-pink-500/30 rounded-xl p-6 text-center hover:bg-pink-500/20 transition-all duration-300 hover:scale-105"
                 >
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-bold text-cyan-400">{equipment.name}</h3>
+                    <h3 className="text-lg font-bold text-pink-500">{pkg.name}</h3>
                     <div className="flex flex-col items-end space-y-1">
-                      <Badge variant={equipment.status === "ready" ? "default" : "destructive"}>
-                        {equipment.status === "ready" ? "Ready" : "Sold Out"}
+                      <Badge variant={pkg.status === "ready" ? "default" : "destructive"}>
+                        {pkg.status === "ready" ? "Ready" : "Sold Out"}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        Stok: {equipment.stock}
+                        Stok: {pkg.stock}
                       </Badge>
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-pink-500 mb-2">{equipment.price}</p>
-                  <p className="text-gray-300 text-sm mb-4">{equipment.description}</p>
+                  <p className="text-3xl font-bold text-white mb-4">{pkg.price}</p>
                   <Button
-                    onClick={() => addToCart(equipment)}
-                    disabled={equipment.stock === 0 || equipment.status === "sold"}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => addToCart(pkg)}
+                    disabled={pkg.stock === 0 || pkg.status === "sold"}
+                    className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {equipment.stock === 0 || equipment.status === "sold" ? "Habis" : "Tambah ke Cart"}
+                    {pkg.stock === 0 || pkg.status === "sold" ? "Habis" : "Tambah ke Cart"}
                   </Button>
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Equipment */}
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-cyan-400 mb-6">Perlengkapan Tambahan</h3>
+            {equipmentItems.length === 0 ? (
+              <div className="text-center text-gray-400">
+                <p>Tidak ada perlengkapan yang tersedia saat ini.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {equipmentItems.map((equipment) => (
+                  <div
+                    key={equipment.id}
+                    className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-lg font-bold text-cyan-400">{equipment.name}</h3>
+                      <div className="flex flex-col items-end space-y-1">
+                        <Badge variant={equipment.status === "ready" ? "default" : "destructive"}>
+                          {equipment.status === "ready" ? "Ready" : "Sold Out"}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          Stok: {equipment.stock}
+                        </Badge>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold text-pink-500 mb-2">{equipment.price}</p>
+                    <p className="text-gray-300 text-sm mb-4">{equipment.description}</p>
+                    <Button
+                      onClick={() => addToCart(equipment)}
+                      disabled={equipment.stock === 0 || equipment.status === "sold"}
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {equipment.stock === 0 || equipment.status === "sold" ? "Habis" : "Tambah ke Cart"}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
