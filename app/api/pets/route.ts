@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 
-// In-memory storage for pets data (will reset on server restart)
-let petsData = [
+// Default pets data
+const defaultPetsData = [
   {
     id: 1,
     name: "TITAN TRICERATOPS",
@@ -211,9 +211,28 @@ let petsData = [
   },
 ]
 
-// GET - Fetch all pets
-export async function GET() {
+// In-memory storage that will be initialized from localStorage or default data
+let petsData = [...defaultPetsData]
+
+// GET - Fetch all pets with localStorage sync
+export async function GET(request: NextRequest) {
   try {
+    // Check if client sent stored data
+    const url = new URL(request.url)
+    const storedData = url.searchParams.get("stored")
+
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(decodeURIComponent(storedData))
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          petsData = parsedData
+          console.log("Server: Updated from client localStorage:", petsData.length, "items")
+        }
+      } catch (e) {
+        console.log("Server: Failed to parse stored data, using current data")
+      }
+    }
+
     console.log("GET /api/pets - Returning pets data:", petsData.length, "items")
     return NextResponse.json(petsData, {
       status: 200,
@@ -253,7 +272,7 @@ export async function POST(request: NextRequest) {
     petsData.push(petWithId)
     console.log("Pet added successfully:", petWithId)
 
-    return NextResponse.json(petWithId, { status: 201 })
+    return NextResponse.json({ pet: petWithId, allPets: petsData }, { status: 201 })
   } catch (error) {
     console.error("POST Error:", error)
     return NextResponse.json(
@@ -284,7 +303,7 @@ export async function PUT(request: NextRequest) {
     petsData[index] = updatedPet
     console.log("Pet updated successfully:", updatedPet)
 
-    return NextResponse.json(updatedPet, { status: 200 })
+    return NextResponse.json({ pet: updatedPet, allPets: petsData }, { status: 200 })
   } catch (error) {
     console.error("PUT Error:", error)
     return NextResponse.json(
@@ -312,7 +331,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     console.log("Pet deleted successfully")
-    return NextResponse.json({ success: true, message: "Pet deleted successfully" }, { status: 200 })
+    return NextResponse.json({ success: true, message: "Pet deleted successfully", allPets: petsData }, { status: 200 })
   } catch (error) {
     console.error("DELETE Error:", error)
     return NextResponse.json(
